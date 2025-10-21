@@ -2,129 +2,96 @@
 #include <iostream>
 #include <limits>
 
-void mostrarMenu() {
-    std::cout << "\n=== Menu Principal ===" << std::endl;
-    std::cout << "1. Mostrar todos los productos" << std::endl;
-    std::cout << "2. Buscar producto por ID" << std::endl;
-    std::cout << "3. Crear nuevo producto" << std::endl;
-    std::cout << "4. Actualizar producto" << std::endl;
-    std::cout << "5. Eliminar producto" << std::endl;
-    std::cout << "6. Salir" << std::endl;
-    std::cout << "Seleccione una opcion: ";
-}
-
-void limpiarBuffer() {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-}
-
 int main() {
     Tienda tienda;
     tienda.inicializarProductos();
-    
-    std::cout << "Bienvenido al Sistema de Gestion de Tienda" << std::endl;
-    
     int opcion;
-    bool salir = false;
+
+inicio_menu:
+    std::cout << "\n=== Menú de la Tienda ===" << std::endl;
+    std::cout << "1. Agregar producto" << std::endl;
+    std::cout << "2. Buscar producto" << std::endl;
+    std::cout << "3. Actualizar producto" << std::endl;
+    std::cout << "4. Eliminar producto" << std::endl;
+    std::cout << "5. Mostrar todos los productos" << std::endl;
+    std::cout << "6. Salir" << std::endl;
+    std::cout << "Ingrese su opción: ";
     
-    while (!salir) {
-        mostrarMenu();
-        std::cin >> opcion;
-        
-        if (std::cin.fail()) {
-            limpiarBuffer();
-            std::cout << "Opcion invalida. Por favor ingrese un numero." << std::endl;
-            continue;
+    if (!(std::cin >> opcion)) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Entrada inválida. Por favor ingrese un número." << std::endl;
+        goto inicio_menu;
+    }
+
+    switch (opcion) {
+        case 1: {
+            int id, cantidad;
+            double precio;
+            std::string nombre;
+            
+            std::cout << "Ingrese ID: ";
+            std::cin >> id;
+            std::cout << "Ingrese nombre: ";
+            std::cin.ignore();
+            std::getline(std::cin, nombre);
+            std::cout << "Ingrese precio: ";
+            std::cin >> precio;
+            std::cout << "Ingrese cantidad: ";
+            std::cin >> cantidad;
+            
+            tienda.crearProducto(id, nombre, precio, cantidad);
+            goto inicio_menu;
         }
-        
-        limpiarBuffer();
-        
-        switch (opcion) {
-            case 1: {
-                tienda.mostrarTodosProductos();
-                break;
+        case 2: {
+            int id;
+            std::cout << "Ingrese ID del producto a buscar: ";
+            std::cin >> id;
+            Producto* producto = tienda.leerProducto(id);
+            if (producto != nullptr) {
+                producto->mostrarInfo();
+            } else {
+                std::cout << "Producto no encontrado." << std::endl;
             }
-            case 2: {
-                int id;
-                std::cout << "Ingrese el ID del producto: ";
-                std::cin >> id;
-                limpiarBuffer();
-                
-                Producto* producto = tienda.leerProducto(id);
-                if (producto != nullptr) {
-                    std::cout << "\nProducto encontrado:" << std::endl;
-                    producto->mostrarInfo();
-                } else {
-                    std::cout << "Producto no encontrado." << std::endl;
-                }
-                break;
-            }
-            case 3: {
-                int id, cantidad;
-                std::string nombre;
-                double precio;
-                
-                std::cout << "Ingrese el ID del producto: ";
-                std::cin >> id;
-                limpiarBuffer();
-                
-                std::cout << "Ingrese el nombre del producto: ";
-                std::getline(std::cin, nombre);
-                
-                std::cout << "Ingrese el precio del producto: ";
-                std::cin >> precio;
-                limpiarBuffer();
-                
-                std::cout << "Ingrese la cantidad del producto: ";
-                std::cin >> cantidad;
-                limpiarBuffer();
-                
-                tienda.crearProducto(id, nombre, precio, cantidad);
-                break;
-            }
-            case 4: {
-                int id, cantidad;
-                std::string nombre;
-                double precio;
-                
-                std::cout << "Ingrese el ID del producto a actualizar: ";
-                std::cin >> id;
-                limpiarBuffer();
-                
-                std::cout << "Ingrese el nuevo nombre del producto: ";
-                std::getline(std::cin, nombre);
-                
-                std::cout << "Ingrese el nuevo precio del producto: ";
-                std::cin >> precio;
-                limpiarBuffer();
-                
-                std::cout << "Ingrese la nueva cantidad del producto: ";
-                std::cin >> cantidad;
-                limpiarBuffer();
-                
-                tienda.actualizarProducto(id, nombre, precio, cantidad);
-                break;
-            }
-            case 5: {
-                int id;
-                std::cout << "Ingrese el ID del producto a eliminar: ";
-                std::cin >> id;
-                limpiarBuffer();
-                
-                tienda.eliminarProducto(id);
-                break;
-            }
-            case 6: {
-                std::cout << "Gracias por usar el sistema. Adios!" << std::endl;
-                salir = true;
-                break;
-            }
-            default: {
-                std::cout << "Opcion invalida. Por favor seleccione una opcion del 1 al 6." << std::endl;
-                break;
-            }
+            goto inicio_menu;
+        }
+        case 3: {
+            int id, cantidad;
+            double precio;
+            std::string nombre;
+            
+            std::cout << "Ingrese ID del producto a actualizar: ";
+            std::cin >> id;
+            std::cout << "Ingrese nuevo nombre: ";
+            std::cin.ignore();
+            std::getline(std::cin, nombre);
+            std::cout << "Ingrese nuevo precio: ";
+            std::cin >> precio;
+            std::cout << "Ingrese nueva cantidad: ";
+            std::cin >> cantidad;
+            
+            tienda.actualizarProducto(id, nombre, precio, cantidad);
+            goto inicio_menu;
+        }
+        case 4: {
+            int id;
+            std::cout << "Ingrese ID del producto a eliminar: ";
+            std::cin >> id;
+            tienda.eliminarProducto(id);
+            goto inicio_menu;
+        }
+        case 5: {
+            tienda.mostrarTodosProductos();
+            goto inicio_menu;
+        }
+        case 6: {
+            std::cout << "¡Gracias por usar el sistema!" << std::endl;
+            return 0;
+        }
+        default: {
+            std::cout << "Opción inválida." << std::endl;
+            goto inicio_menu;
         }
     }
-    
     return 0;
 }
